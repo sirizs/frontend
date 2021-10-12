@@ -1,0 +1,59 @@
+version: "3.9"
+services:
+  frontend:
+    image: sirizs/frontend
+    container_name: frontend
+    ports:
+    - "80:80"
+    depends_on:
+    - cart
+    - catalogue
+    - user
+    - shipping
+    - payment
+  cart:
+    image: sirizs/cart
+    container_name: cart
+    depends_on:
+    - redis
+  catalogue:
+    image: sirizs/catalogue
+    container_name: catalogue
+    depends_on:
+    - mongodb
+  user:
+    image: sirizs/user
+    container_name: user
+    depends_on:
+    - mongodb
+    - redis
+  shipping:
+    image: sirizs/shipping
+    container_name: shipping
+    depends_on:
+    - mysql
+    environment:
+      CART_ENDPOINT: "cart:8080"
+  payment:
+    image: sirizs/payment
+    container_name: payment
+    depends_on:
+    - rabbitmq
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+    - /home/ubuntu/data/mysql:/var/lib/mysql
+  mongodb:
+    image: mongo
+    container_name: mongo
+    volumes:
+    - /home/ubuntu/data/mongo:/data/db
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq
+  redis:
+    container_name: redis
+    image: redis
